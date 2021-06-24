@@ -1,0 +1,84 @@
+<meta charset="utf-8">
+<style type="text/css">
+	#app {
+		display: flex;
+		flex-direction: row;
+	}
+	#decart_overflow {
+		overflow: hidden;
+		position: relative;
+	}
+	#decart {
+		position: absolute;
+	}
+</style>
+
+<div id="app">
+	<canvas id="radians"></canvas>
+	<div id="decart_overflow">
+		<canvas id="decart"></canvas>
+	</div>
+</div>
+	
+<script type="text/javascript">
+	radians = document.querySelector("#radians");
+	decart  = document.querySelector("#decart");
+	dec_over = document.querySelector("div#decart_overflow");
+
+	radians.width  = 200;
+	radians.height = 200;
+	decart.width  = 600; 
+	decart.height = 200; 
+
+	dec_over.style.width = 600;
+	dec_over.style.height = 200;
+	
+	ctx_r = radians.getContext("2d");
+	ctx_d = decart.getContext("2d");
+
+	cx = 100; cy = 100; r = 80; ang = 0; dec_x = 600;
+
+	setInterval(()=>{
+		ctx_r.clearRect(0,0,radians.width,radians.height);
+
+		// draw running circle
+		ang = (ang + 1) % 361;
+		coords = get_coords_by_angle(cx, cy, r, ang);
+
+		ctx_r.beginPath();
+			ctx_r.fillStyle = "#ff00ff";
+			ctx_r.arc(coords[0],coords[1], 5, 0, 2*Math.PI, false);
+			ctx_r.fill();
+		ctx_r.closePath();
+		ctx_r.beginPath();
+			ctx_r.fillStyle = "#ff0000";
+			ctx_r.arc(cx,cy, 2, 0, 2*Math.PI, false);
+			ctx_r.fill();
+		ctx_r.closePath();
+		ctx_r.beginPath();
+			ctx_r.moveTo(coords[0],coords[1]);
+			ctx_r.lineTo(200, coords[1]);
+			ctx_r.stroke();
+		ctx_r.closePath();
+
+		ctx_d.beginPath();
+			ctx_d.fillStyle = "#ff00ff";
+			ctx_d.arc(dec_x,coords[1], 3, 0, 2*Math.PI, false);
+			ctx_d.fill();
+		ctx_d.closePath();
+		dec_x -= 1;
+		decart.style.left = (-dec_x) + "px";
+		if (dec_x < 0) {
+			dec_x = 600;
+			ctx_d.clearRect(0,0,decart.width,decart.height);
+		}
+	},10)
+
+	function get_coords_by_angle(cx, cy, r, angle) {
+		rad = angle * Math.PI / 180
+		x = cx + r*Math.cos(rad)
+		y = cy - r*Math.sin(rad)
+
+		return [x,y]
+	}
+</script>
